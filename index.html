@@ -1,0 +1,10 @@
+<!doctype html><meta charset="utf-8"><title>FSM widget probe</title>
+<style>body{font:14px system-ui;padding:12px}pre{white-space:pre-wrap;word-break:break-all;background:#f4f4f4;padding:8px}</style>
+<h3>Widget probe</h3><pre id="o">loading…</pre>
+<script>
+const o=document.getElementById('o'); const log=(k,v)=>{o.textContent+='\n'+k+': '+(typeof v==='string'?v:JSON.stringify(v,null,1)).slice(0,1500);};
+o.textContent='href: '+location.href+'\nreferrer: '+document.referrer+'\nparent-same-origin: '+(()=>{try{return !!window.parent.location.href}catch(e){return 'no'}})();
+window.addEventListener('message',e=>{log('message from '+e.origin,e.data);});
+log('globals',Object.keys(window).filter(k=>/zoho|zfsm|sdk|embedded|widget/i.test(k)));
+setTimeout(()=>{log('globals@3s',Object.keys(window).filter(k=>/zoho|zfsm|sdk|embedded|widget/i.test(k)));},3000);
+</script>
