@@ -1,10 +1,20 @@
 <!doctype html><meta charset="utf-8"><title>FSM widget probe</title>
 <style>body{font:14px system-ui;padding:12px}pre{white-space:pre-wrap;word-break:break-all;background:#f4f4f4;padding:8px}</style>
-<h3>Widget probe</h3><pre id="o">loading…</pre>
+<h3>Widget probe v2</h3><pre id="o">loading…</pre>
+<script src="https://live.zwidgets.com/js-sdk/1.2/ZohoEmbededAppSDK.min.js"></script>
 <script>
-const o=document.getElementById('o'); const log=(k,v)=>{o.textContent+='\n'+k+': '+(typeof v==='string'?v:JSON.stringify(v,null,1)).slice(0,1500);};
-o.textContent='href: '+location.href+'\nreferrer: '+document.referrer+'\nparent-same-origin: '+(()=>{try{return !!window.parent.location.href}catch(e){return 'no'}})();
-window.addEventListener('message',e=>{log('message from '+e.origin,e.data);});
-log('globals',Object.keys(window).filter(k=>/zoho|zfsm|sdk|embedded|widget/i.test(k)));
-setTimeout(()=>{log('globals@3s',Object.keys(window).filter(k=>/zoho|zfsm|sdk|embedded|widget/i.test(k)));},3000);
+const o=document.getElementById('o'); const log=(k,v)=>{o.textContent+='\n'+k+': '+(typeof v==='string'?v:JSON.stringify(v,null,1)).slice(0,1200);};
+o.textContent='href: '+location.href;
+window.addEventListener('message',e=>{log('message '+e.origin,e.data);});
+log('ZOHO global', typeof ZOHO==='undefined'?'undefined':Object.keys(ZOHO));
+if(typeof ZOHO!=='undefined'){
+  log('embeddedApp keys', Object.keys(ZOHO.embeddedApp||{}));
+  log('other namespaces', Object.keys(ZOHO).filter(k=>k!=='embeddedApp').map(k=>k+':'+Object.keys(ZOHO[k]||{}).slice(0,12).join('|')));
+  ZOHO.embeddedApp.on("PageLoad",d=>log('PageLoad',d));
+  ZOHO.embeddedApp.init().then(()=>{log('init','ok');
+    try{ if(ZOHO.FSM&&ZOHO.FSM.API){ ZOHO.FSM.API.getRecord({Entity:'Work_Orders',RecordID:'10789000005655804'}).then(r=>log('FSM.getRecord',r)).catch(e=>log('FSM.getRecord err',String(e))); } }catch(e){log('fsm err',String(e));}
+    try{ if(ZOHO.CRM&&ZOHO.CRM.API){ ZOHO.CRM.API.getRecord({Entity:'Work_Orders',RecordID:'10789000005655804'}).then(r=>log('CRM.getRecord',r)).catch(e=>log('CRM.getRecord err',String(e))); } }catch(e){log('crm err',String(e));}
+    try{ if(ZOHO.CRM&&ZOHO.CRM.CONFIG){ ZOHO.CRM.CONFIG.getCurrentUser().then(r=>log('currentUser',r)).catch(e=>log('currentUser err',String(e))); } }catch(e){}
+  }).catch(e=>log('init err',String(e)));
+}
 </script>
